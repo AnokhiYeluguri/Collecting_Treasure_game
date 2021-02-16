@@ -1,0 +1,164 @@
+var path, mainCyclist, mainCyclistLost;
+var pathImg, mainRacerImg1, mainRacerImg2;
+
+var END = 0;
+var PLAY = 1;
+var gameState = PLAY;
+
+var distance = 0;
+
+var gameover, gameoverImage;
+var restart, restartImage;
+
+var redGC
+var pinkGC
+var yellowGC
+
+var opponents1, opponents1Image
+var opponents2, opponents2Image
+var opponents3, opponents3Image
+
+var obstacle1, obstace1Image;
+var obstacle2, obstace2Image;
+var obstacle3, obstace3Image;
+
+var bellSound
+
+function preload() {
+  pathImg = loadImage("images/Road.png");
+  mainRacerImg1 = loadAnimation("images/mainPlayer1.png", "images/mainPlayer2.png");
+  mainRacerImglost = loadAnimation("images/mainPlayer3.png");
+
+  opponents1Image = loadAnimation("opponent1.png", "opponent2.png")
+  opponents2Image = loadAnimation("opponent4.png", "opponent5.png")
+  opponents3Image = loadAnimation("opponent7.png", "opponent8.png")
+
+  //bellSound = loadSound("bell.mp3")
+}
+
+
+function setup() {
+
+  createCanvas(1000, 300);
+
+  // Moving background
+  path = createSprite(100, 150);
+  path.addImage(pathImg);
+  path.velocityX = -5;
+
+  //creating boy running
+  mainCyclist = createSprite(70, 150, 20, 20);
+  mainCyclist.addAnimation("Cycling", mainRacerImg1);
+  mainCyclist.scale = 0.07;
+
+  mainCyclistLost = createSprite(70, 150, 20, 20);
+  mainCyclistLost.addImage(mainRacerImglost)
+  mainCyclistLost.scale = 0.07;
+
+  redGC = new Group();
+  pinkGC = new Group();
+  yellowGC = new Group();
+
+}
+
+
+function draw() {
+
+  background(0);
+  drawSprites();
+
+  //    if(distance>0 && distance%100 === 0){
+  //       bellSound.play() 
+  //    }
+
+
+  if (gameState === PLAY) 
+  {
+
+    distance = distance + Math.round(getFrameRate() / 50);
+    path.velocityX = -(6 + 2 * distance / 150);
+
+    mainCyclist.y = World.mouseY;
+
+    edges = createEdgeSprites();
+    mainCyclist.collide(edges);
+
+ //code to reset the background
+    if (path.x < 0) 
+    {
+      path.x = width / 2;
+    }
+
+  } 
+  else if (gameState === END)
+  {
+  
+    mainCyclistLost.changeAnimation(mainRacerImglost)
+    path.velocityX = 0
+  }
+
+  if (mainCyclist.isTouching(redGC)) 
+  {
+    console.log("red touching")
+    gameState = END
+  }
+
+  var spawnOpponent = Math.round(random(1, 3));
+
+  if (World.frameCount % 150 == 0) {
+    if (spawnOpponent == 1) {
+      pinkCyclist();
+    } else if (spawnOpponent == 3) {
+      yellowCyclist();
+    } else {
+      redCyclists();
+    }
+  }
+
+  textSize(20);
+  fill(255);
+  text("Distance: " + distance, 350, 30);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+function redCyclists() {
+
+  var opponents1 = createSprite(1100, Math.round(random(50, 250), 10, 10));
+  opponents1.scale = 0.06;
+  opponents1.velocityX = -(6 + 2 * distance / 150);
+  opponents1.addAnimation("opponentPlayer1", opponents1Image);
+  opponents1.setLifetime = 170;
+  redGC.add(opponents1);
+}
+
+
+function yellowCyclist() {
+
+  var opponents2 = createSprite(1100, Math.round(random(50, 250), 10, 10));
+  opponents2.scale = 0.06;
+  opponents2.velocityX = -(6 + 2 * distance / 150);
+  opponents2.addAnimation("opponentPlayer2", opponents2Image);
+  opponents2.setLifetime = 170;
+  yellowGC.add(opponents2);
+}
+
+function pinkCyclist() {
+
+  var opponents3 = createSprite(1100, Math.round(random(50, 250), 10, 10));
+  opponents3.scale = 0.06;
+  opponents3.velocityX = -(6 + 2 * distance / 150);
+  opponents3.addAnimation("opponentPlayer3", opponents3Image);
+  opponents3.setLifetime = 170;
+  pinkGC.add(opponents3);
+}
