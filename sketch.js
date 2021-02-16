@@ -8,6 +8,8 @@ var path,boy,cash,diamonds,jwellery,sword;
 var pathImg,boyImg,cashImg,diamondsImg,jwelleryImg,swordImg;
 var treasureCollection = 0;
 var cashG,diamondsG,jwelleryG,swordGroup;
+var hurdle,hurdleImage
+var Chances = 5;
 
 //Load Images
 function preload()
@@ -20,7 +22,7 @@ function preload()
   swordImg = loadImage("sword.png");
   endImg =loadImage("gameOver.png");
   sadImg =loadImage("sad.png")
-  
+  hurdleImage = loadImage("hurdle.png")
 }
 
 //Setup the canvas
@@ -52,6 +54,7 @@ cashG=new Group();
 diamondsG=new Group();
 jwelleryG=new Group();
 swordGroup=new Group();
+hurdleGroup=new Group();
 
 
 }
@@ -74,6 +77,7 @@ function draw() {
     createDiamonds();
     createJwellery();
     createSword();
+    createHurdle();
 
     if (cashG.isTouching(boy)) {
       cashG.destroyEach();
@@ -87,10 +91,18 @@ function draw() {
       jwelleryG.destroyEach();
       treasureCollection += 100
       
+    }else if(hurdleGroup.isTouching(boy)){
+      hurdleGroup.destroyEach()
+      treasureCollection=treasureCollection-100;
+      
     }else{
       if(swordGroup.isTouching(boy)) {
         swordGroup.destroyEach();
-        gameState = END;
+        Chances=Chances-1
+        
+        if (Chances===0){
+          gameState=END
+        }
     }
   }
 
@@ -101,6 +113,7 @@ function draw() {
     jwelleryG.destroyEach()
     diamondsG.destroyEach()
     cashG.destroyEach()
+    hurdleGroup.destroyEach()
     
     var endImg = createSprite(200,200,10,10)
     
@@ -118,18 +131,23 @@ function draw() {
   fill("red");
   text("Treasure: "+ treasureCollection,120,30);
   
-  fill("black");
+  fill("yellow");
   textSize(18)
-  text("collect the treasure but watch out of the swords",10,50)
+  text("Collect the treasure but watch out of the swords",10,50)
+  text("Touching the cone will reduce 100 points",10,70)
   
   fill("white");
-  text("Points:",10,80)
+  text("Points:",10,90)
   fill("lightblue");
-  text("> diamonds = 100",10,100)     
+  text("> diamonds = 100",10,110)     
   fill("pink");
-  text("> jwellery = 50",10,120) 
+  text("> jwellery = 50",10,130) 
   fill("lightgreen");
-  text("> cash = 10 ",10,140) 
+  text("> cash = 10 ",10,150) 
+  
+  textSize(30);
+  fill("red");
+  text("chances = "+ Chances,10,190)
   
   
 }
@@ -175,5 +193,16 @@ function createSword(){
   sword.velocityY = 3;
   sword.lifetime = 150;
   swordGroup.add(sword);
+  }
+}
+
+function createHurdle(){
+  if (World.frameCount % 150 == 0) {
+  var hurdle = createSprite(Math.round(random(50, 350),40, 10, 10));
+  hurdle.addImage(hurdleImage);
+  hurdle.scale=0.1;
+  hurdle.velocityY = 3;
+  hurdle.lifetime = 150;
+  hurdleGroup.add(hurdle);
   }
 }
